@@ -1,0 +1,22 @@
+{
+  "name": "db-backup-script",
+  "version": "1.0.0",
+  "description": "Automated script to take the backup of databases periodically and upload to cloud space.",
+  "main": "server.js",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.1692.0",
+    "dotenv": "^16.5.0",
+    "node-cron": "^3.0.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "db-back-script",
+    "backup",
+    "database",
+    "cloud-db-backup"
+  ],
+  "author": "Akib Deraiya"
+}
