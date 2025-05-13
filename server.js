@@ -4,6 +4,7 @@ const AWS = require('aws-sdk');
 const fs = require('fs');
 const path = require('path');
 const cron = require('node-cron');
+const { sendSlackMessage } = require('./utils/slack');
 
 function getDateFormatted() {
   const now = new Date();
@@ -54,9 +55,24 @@ function backupAndUpload(env, dbConfig) {
     s3.upload(params, (uploadErr, data) => {
       if (uploadErr) {
         console.error(`Upload failed with fileName: '${fileName}' for Env: ${env}. Error is: ${JSON.stringify(uploadErr, null, 2)}`);
+        // Optional: Send slack notification
+        sendSlackMessage({
+          channel: process.env.SLACK_CHANNEL_ID,
+          environment: env,
+          status: false,
+          fileName: locationKey,
+        });
       } else {
         console.log(`Backup file: '${fileName}' uploaded to ${locationKey} for Env: ${env}.`);
-        fs.unlinkSync(filePath); // Clean up local backup
+        fs.unlinkSync(filePath);
+
+        // Optional: Send slack notification
+        sendSlackMessage({
+          channel: process.env.SLACK_CHANNEL_ID,
+          environment: env,
+          status: true,
+          fileName: locationKey,
+        });
       }
     });
   });
@@ -80,5 +96,5 @@ function takeBackup() {
   });
 }
 
-// Schedule daily at 2:00 AM
-cron.schedule('0 2 * * *', takeBackup);
+// Schedule every 6 hours on a daily basis
+cron.schedule('0 6,12,18,23 * * *', takeBackup);
